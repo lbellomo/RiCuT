@@ -6,6 +6,7 @@ import telepot
 from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ForceReply
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 from telepot.namedtuple import InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent
+import services
 
 """
 $ python3.5 skeleton_route.py <token>
@@ -35,12 +36,16 @@ message_with_inline_keyboard = None
 def on_chat_message(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
     print('Chat:', content_type, chat_type, chat_id)
+    print(content_type)
+    print(msg)
 
-    if content_type != 'text':
+    if content_type != 'text' and content_type != 'location':
         return
 
-    command = msg['text'][-1:].lower()
+    if content_type == 'location':
+        bot.sendPhoto(chat_id, services.get_image(), caption=services.get_message())
 
+    command = msg['text'][-1:].lower()
     if command == 'c':
         markup = ReplyKeyboardMarkup(keyboard=[
                      ['Plain text', KeyboardButton(text='Text only')],
