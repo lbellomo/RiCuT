@@ -4,7 +4,7 @@ from matplotlib import pyplot
 import pyproj
 
 
-def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3000.7428, coef_B=-3.9333):
+def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.7428, coef_B=-3.9333):
     '''
     Return:
     -------
@@ -21,11 +21,14 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3000
     # mapeo x-y con long-lat
     #fi_x = fi_long # antes de usar pyproj
     #fi_y =  fi_lat # antes de usar pyproj
-    fi_x, fi_y = p(fi_lat, fi_long)
+    fi_x, fi_y = p(fi_long, fi_lat)
 
     #pp_x = pp_long # antes de usar pyproj
     #pp_y = pp_lat  # antes de usar pyproj
-    pp_x, pp_y = p(pp_lat, pp_long)
+    pp_x, pp_y = p(pp_long, pp_lat)
+
+    if vel_modulo == 0:
+        vel_modulo = 0.1
 
     vel_x = vel_modulo*np.cos(vel_angulo)
     vel_y =  vel_modulo*np.sin(vel_angulo)
@@ -39,11 +42,11 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3000
     alfa = np.arccos(vel_x/modulo_velocidad) * 180 / np.pi
 
     # area del fuego deseada
-    area_fuego = coef_A*modulo_velocidad + coef_B # 2pi a b
+    area_fuego = np.abs(coef_A*modulo_velocidad + coef_B) # 2pi a b
 
     # excentricidad deseada
     if modulo_velocidad < 5:
-        e=0.2
+        e=0.1
     elif modulo_velocidad < 20:
         e=0.4
     elif modulo_velocidad < 40:
@@ -52,6 +55,8 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3000
         e = 0.8
     else:
         e = 0.9
+
+    e=0.1
 
     # calculamos parametros de la elipse segun el area y la excentricidad.
     a = np.sqrt(np.sqrt(-area_fuego**2 / (4*np.pi**2*(e**2-1))))
@@ -67,12 +72,12 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3000
     foco_2_y = 0
 
     # rotamos el foco segun el viento.
-    foco_2_x_rotado = foco_2_x*vel_y/modulo_velocidad - foco_2_y*vel_x/modulo_velocidad
-    foco_2_y_rotado = foco_2_x*vel_x/modulo_velocidad - foco_2_y*vel_y/modulo_velocidad
+    foco_2_x_rotado = foco_2_x*vel_x/modulo_velocidad - foco_2_y*vel_y/modulo_velocidad
+    foco_2_y_rotado = foco_2_x*vel_y/modulo_velocidad + foco_2_y*vel_x/modulo_velocidad
 
     # rotamos el centro segun el viento.
-    ce_x__elip_rotado = ce_x_elip*vel_y/modulo_velocidad - ce_y_elip*vel_x/modulo_velocidad
-    ce_y__elip_rotado = ce_x_elip*vel_x/modulo_velocidad - ce_y_elip*vel_y/modulo_velocidad
+    ce_x__elip_rotado = ce_x_elip*vel_x/modulo_velocidad - ce_y_elip*vel_y/modulo_velocidad
+    ce_y__elip_rotado = ce_x_elip*vel_y/modulo_velocidad + ce_y_elip*vel_x/modulo_velocidad
 
     ce_x = ce_x__elip_rotado + fi_x
     ce_y = ce_y__elip_rotado + fi_y
