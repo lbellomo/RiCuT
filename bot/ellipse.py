@@ -125,10 +125,10 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3000
     punto_salida = np.array([[ps_x, ps_y]])
 
     # grafico para validar los resultados.
-    # pyplot.plot(*zip(*E))
-    # pyplot.scatter(*zip(*foco_incendio))
-    # pyplot.scatter(*zip(*posicion_persona),c='r' )
-    # pyplot.scatter(*zip(*punto_salida))
+    #pyplot.plot(*zip(*E))
+    #pyplot.scatter(*zip(*foco_incendio))
+    #pyplot.scatter(*zip(*posicion_persona),c='r' )
+    #pyplot.scatter(*zip(*punto_salida))
 
 
     return (ce_lat, ce_long, ps_lat, ps_long, a, b, alfa)
@@ -138,5 +138,5 @@ if __name__ == '__main__':
     for angle in range(0,360,90):
         for vel_mod in range(1,100,50):
             ellipse(-33.104597,-64.364401,-33.104597,-64.364401, vel_mod, angle)
-    pyplot.grid()
-    pyplot.savefig('myfig.png')
+    #pyplot.grid()
+    #pyplot.savefig('myfig.png')
