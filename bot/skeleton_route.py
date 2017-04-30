@@ -36,16 +36,18 @@ message_with_inline_keyboard = None
 def on_chat_message(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
     print('Chat:', content_type, chat_type, chat_id)
-    print(content_type)
     print(msg)
-
-    if content_type != 'text' and content_type != 'location':
-        return
-
     if content_type == 'location':
         bot.sendPhoto(chat_id, services.get_image(), caption=services.get_message())
+    else :
+        markup = ReplyKeyboardMarkup(keyboard=[
+                     [KeyboardButton(text='Help Me!', request_location=True)],
+                     [KeyboardButton(text='Where is the Fire!?', request_location=True, callback_data=services.get_message_distance())],
+                 ])
+        bot.sendMessage(chat_id, text= "Welcome to RiCut fire fighter assistance, please press keyboard option to get safe", reply_markup=markup)
 
-    command = msg['text'][-1:].lower()
+
+    """
     if command == 'c':
         markup = ReplyKeyboardMarkup(keyboard=[
                      ['Plain text', KeyboardButton(text='Text only')],
@@ -69,7 +71,7 @@ def on_chat_message(msg):
     elif command == 'f':
         markup = ForceReply()
         bot.sendMessage(chat_id, 'Force reply', reply_markup=markup)
-
+    """
 
 def on_callback_query(msg):
     query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
