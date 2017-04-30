@@ -8,6 +8,7 @@ from mpl_toolkits.basemap import Basemap
 def make_map(lon_e=-32.08, lat_e=-64.53, width_e=0.01, height_e=0.02,
              angle_e=30, lon_p=-32.083, lat_p=-64.532):
     '''
+    Crea un mapa centrado en la lon_p, lat_p, y dibuja la elipse.
     lon_e: lon elipse (float)
     lat_e: lat elipse (float)
     width_e: width elipse (float)
