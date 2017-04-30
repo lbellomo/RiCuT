@@ -30,8 +30,8 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.74
     if vel_modulo == 0:
         vel_modulo = 0.1
 
-    vel_x = vel_modulo*np.cos(vel_angulo)
-    vel_y =  vel_modulo*np.sin(vel_angulo)
+    vel_x = vel_modulo*np.cos(vel_angulo*np.pi/180)
+    vel_y =  vel_modulo*np.sin(vel_angulo*np.pi/180)
 
     # calculo el modulo de la velocidad
     modulo_velocidad = np.sqrt(vel_x**2 + vel_y**2) # km por hora
@@ -56,7 +56,7 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.74
     else:
         e = 0.9
 
-    e=0.1
+    e=0.9
 
     # calculamos parametros de la elipse segun el area y la excentricidad.
     a = np.sqrt(np.sqrt(-area_fuego**2 / (4*np.pi**2*(e**2-1))))
@@ -140,7 +140,7 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.74
 
 # function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5)
 if __name__ == '__main__':
-    for angle in range(0,360,90):
+    for angle in range(0,360,45):
         for vel_mod in range(1,100,50):
             ellipse(-33.104597,-64.364401,-33.104597,-64.364401, vel_mod, angle)
     #pyplot.grid()
