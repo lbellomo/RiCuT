@@ -1,26 +1,44 @@
 import numpy as np
 from matplotlib import pyplot
 
-def function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5):
+import pyproj
+
+
+def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.7428, coef_B=-3.9333):
+    '''
+    Return:
+    -------
+    ce_lat: latitud centro de la elipse
+    ce_long: longitud centro de la elipse
+    ps_lat: latitud del punto de salida
+    ps_long: longitud del punto de salida
+    a, b: eje mayor y menor de la elipse
+    alfa: angulo de la elipse
+    '''
+    p = pyproj.Proj(init='epsg:3857')
 
     # mapeo x-y con long-lat
-    fi_x = fi_long
-    fi_y =  fi_lat
-    pp_x = pp_long
-    pp_y = pp_lat
-    vel_x = vel_long
-    vel_y =  vel_lat
+    #fi_x = fi_long # antes de usar pyproj
+    #fi_y =  fi_lat # antes de usar pyproj
+    fi_x, fi_y = p(fi_lat, fi_long)
+
+    #pp_x = pp_long # antes de usar pyproj
+    #pp_y = pp_lat  # antes de usar pyproj
+    pp_x, pp_y = p(pp_lat, pp_long)
+
+    vel_x = vel_modulo*np.cos(vel_angulo)
+    vel_y =  vel_modulo*np.sin(vel_angulo)
 
     # calculo el modulo de la velocidad
     modulo_velocidad = np.sqrt(vel_x**2 + vel_y**2) # km por hora
     rotMatrix = np.array([[vel_x/modulo_velocidad, vel_y/modulo_velocidad],
                              [-vel_y/modulo_velocidad,  vel_x/modulo_velocidad]])
 
-    # calculo el alfa
+    # calculo el alfa (rotacion de la elipse)
     alfa = np.arccos(vel_x/modulo_velocidad) * 180 / np.pi
 
     # area del fuego deseada
-    area_fuego = 1 + coef_A*modulo_velocidad # 2pi a b
+    area_fuego = coef_A*modulo_velocidad + coef_B # 2pi a b
 
     # excentricidad deseada
     if modulo_velocidad < 5:
@@ -48,16 +66,17 @@ def function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5):
     foco_2_y = 0
 
     # rotamos el foco segun el viento.
-    foco_2_x_rotado = foco_2_x*vel_lat/modulo_velocidad - foco_2_y*vel_long/modulo_velocidad
-    foco_2_y_rotado = foco_2_x*vel_long/modulo_velocidad - foco_2_y*vel_lat/modulo_velocidad
+    foco_2_x_rotado = foco_2_x*vel_y/modulo_velocidad - foco_2_y*vel_x/modulo_velocidad
+    foco_2_y_rotado = foco_2_x*vel_x/modulo_velocidad - foco_2_y*vel_y/modulo_velocidad
 
     # rotamos el centro segun el viento.
-    ce_x__elip_rotado = ce_x_elip*vel_lat/modulo_velocidad - ce_y_elip*vel_long/modulo_velocidad
-    ce_y__elip_rotado = ce_x_elip*vel_long/modulo_velocidad - ce_y_elip*vel_lat/modulo_velocidad
+    ce_x__elip_rotado = ce_x_elip*vel_y/modulo_velocidad - ce_y_elip*vel_x/modulo_velocidad
+    ce_y__elip_rotado = ce_x_elip*vel_x/modulo_velocidad - ce_y_elip*vel_y/modulo_velocidad
 
     ce_x = ce_x__elip_rotado + fi_x
     ce_y = ce_y__elip_rotado + fi_y
 
+    ce_long, ce_lat = p(ce_x, ce_y, inverse=True)
 
     # trasladamos la ubicacion de la persona en relacion al foco del incendio (origen)
     x_persona_ellip = pp_lat - fi_lat
@@ -97,17 +116,20 @@ def function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5):
             ps_x = E[index][0]
             ps_y = E[index][1]
 
+    ps_long, ps_lat =  p(ps_x, ps_y, inverse=True)
+
     punto_salida = np.array([[ps_x, ps_y]])
 
     # grafico para validar los resultados.
-    # pyplot.plot(*zip(*E))
-    # pyplot.scatter(*zip(*foco_incendio))
-    # pyplot.scatter(*zip(*posicion_persona))
-    # pyplot.scatter(*zip(*punto_salida))
-    # pyplot.grid()
+    #pyplot.plot(*zip(*E))
+    #pyplot.scatter(*zip(*foco_incendio))
+    #pyplot.scatter(*zip(*posicion_persona))
+    #pyplot.scatter(*zip(*punto_salida))
+    #pyplot.grid()
 
-    return (ce_y, ce_x, ps_y, ps_x, a, b, alfa)
+    return (ce_lat, ce_long, ps_lat, ps_long, a, b, alfa)
 
 # function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5)
-function(-30,-60,-30,-60,10,0)
-function(-30,-50,-30,-50,-1,0)
+if __name__ == '__main__':
+    ellipse(-30,-60,-30,-60,10,0)
+    ellipse(-30,-60.0001,-30,-60.0001,10,180)
