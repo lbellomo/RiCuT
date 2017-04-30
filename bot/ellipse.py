@@ -56,7 +56,7 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.74
     else:
         e = 0.9
 
-    e=0.9
+    #e=0.9
 
     # calculamos parametros de la elipse segun el area y la excentricidad.
     a = np.sqrt(np.sqrt(-area_fuego**2 / (4*np.pi**2*(e**2-1))))
@@ -140,8 +140,7 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.74
 
 # function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5)
 if __name__ == '__main__':
-    for angle in range(0,360,45):
-        for vel_mod in range(1,100,50):
-            ellipse(-33.104597,-64.364401,-33.104597,-64.364401, vel_mod, angle)
+    for angle in range(0,360,90):
+        print ellipse(-33.104597,-64.364401,-33.104597,-64.364401, 10, 0)
     #pyplot.grid()
     #pyplot.savefig('myfig.png')
