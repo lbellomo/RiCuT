@@ -4,7 +4,7 @@ from math import sin, cos, sqrt, atan2, radians
 from key import keys
 from urllib.request import urlopen
 #from make_map import make_map
-from ellipse import function
+#from ellipse import function
 
 def get_wind_data(lat=35, lon=139):
     app_id = keys['owm']
@@ -35,21 +35,27 @@ def get_image(path="file:///home/pbovina/space/RiCuT/bot/maps/map.png", name='ma
 def get_message(peligro=True, lat1=10.22, lon1=10.22, lat2=15.22, lon2=15.22, direc="norte"):
         
     dist = dist_fuego_persona(lat1, lon1, lat2, lon2)    
-    msg = "usted esta en {} debe dirigirse a direccion {} para escapar"
+    msg = "Usted esta en {} debe dirigirse a direccion {} para escapar"
     
     if peligro:
         return msg.format("peligro", direc)
     
-    msg1 = "usted esta a salvo respecto a la zona de peligo a una distancia de {}"
+    msg1 = "Usted esta a salvo respecto a la zona de peligro a una distancia de {}"
+    return msg1.format(dist)
+
+def get_message_distance(peligro=True, lat1=10.22, lon1=10.22, lat2=15.22, lon2=15.22, direc="norte"):
+
+    dist = dist_fuego_persona(lat1, lon1, lat2, lon2) 
+    msg1 = "Usted esta a salvo respecto a la zona de peligro a una distancia de {}"
     return msg1.format(dist)
 
 def respuesta(pp_lat1,pp_lon1):
     fuego = get_modis()[0] # par de lat lon del fuego
     viento = get_wind_data(fuego[0], fuego[1]) # obtenemos viendo en centro del fuego
     #function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5):
-    elipse = function(fuego[0],fuego[1], pp_lat, pp_lon, viento[0],viento[1])
-    e_cx = elipse[0](ce_y, ce_x, ps_y, ps_x, a, b, alfa)
-    e_cy = elipse[1]
+    #elipse = function(fuego[0],fuego[1], pp_lat, pp_lon, viento[0],viento[1])
+    #e_cx = elipse[0](ce_y, ce_x, ps_y, ps_x, a, b, alfa)
+    #e_cy = elipse[1]
 
     #mapa = make_map()
 
