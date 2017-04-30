@@ -5,6 +5,16 @@ import pyproj
 
 
 def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.7428, coef_B=-3.9333):
+    '''
+    Return:
+    -------
+    ce_lat: latitud centro de la elipse
+    ce_long: longitud centro de la elipse
+    ps_lat: latitud del punto de salida
+    ps_long: longitud del punto de salida
+    a, b: eje mayor y menor de la elipse
+    alfa: angulo de la elipse
+    '''
     p = pyproj.Proj(init='epsg:3857')
 
     # mapeo x-y con long-lat
@@ -111,11 +121,11 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.74
     punto_salida = np.array([[ps_x, ps_y]])
 
     # grafico para validar los resultados.
-    pyplot.plot(*zip(*E))
-    pyplot.scatter(*zip(*foco_incendio))
-    pyplot.scatter(*zip(*posicion_persona))
-    pyplot.scatter(*zip(*punto_salida))
-    pyplot.grid()
+    #pyplot.plot(*zip(*E))
+    #pyplot.scatter(*zip(*foco_incendio))
+    #pyplot.scatter(*zip(*posicion_persona))
+    #pyplot.scatter(*zip(*punto_salida))
+    #pyplot.grid()
 
     return (ce_lat, ce_long, ps_lat, ps_long, a, b, alfa)
 
