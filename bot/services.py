@@ -3,6 +3,8 @@ import json
 from math import sin, cos, sqrt, atan2, radians
 from key import keys
 from urllib.request import urlopen
+#from make_map import make_map
+from ellipse import function
 
 def get_wind_data(lat=35, lon=139):
     app_id = keys['owm']
@@ -26,37 +28,32 @@ def get_modis():
     pares = [float((e.split(',')[0]), float(e.split(',')[1])) for e in d] #armamos pares
     return [pares[0]]
 
-"""
-def check_point_into_elipse(x, y, cx, cy, r1, r2):
+def get_image(path="file:///home/pbovina/space/RiCuT/bot/maps/map.png", name='map.png'):
+    photo = urlopen(path)
+    return name, photo
 
-    #dado el punto (x,y) verificar que esta dentro de la elipse con centro (cx,cy)
-    #y radio mayor r1 y radio menor r2
-
-    return (((x-cx)**2)/(r1**2))+(((y-cy)**2)/(r2**2))) <= 1
-"""
-
-"""
-def elipse_foco(pos_x, pos_y, wind_deg, wind_speed):
-
-    #generar parametros de una elipse alrededor de un foco
-    #de incendio en (pos_x, pos_y) y parametros de vector de viento
-    #degrees y velocidad
-
-    return (pos_x, pos_y, wind_speed*math.cos(wind_deg), wind_speed*math.sin(wind_deg), wind_deg)
-"""
-
-def get_image(path):
-    photo = urlopen("http://192.168.33.137:8000/map.png")
-    return photo
-
-def get_message(peligro, lat1, lon1, lat2, lon2, direc):
+def get_message(peligro=True, lat1=10.22, lon1=10.22, lat2=15.22, lon2=15.22, direc="norte"):
         
     dist = dist_fuego_persona(lat1, lon1, lat2, lon2)    
     msg = "usted esta en {} debe dirigirse a direccion {} para escapar"
     
-    if peligro
+    if peligro:
+        return msg.format("peligro", direc)
+    
+    msg1 = "usted esta a salvo respecto a la zona de peligo a una distancia de {}"
+    return msg1.format(dist)
 
-        
+def respuesta(pp_lat1,pp_lon1):
+    fuego = get_modis()[0] # par de lat lon del fuego
+    viento = get_wind_data(fuego[0], fuego[1]) # obtenemos viendo en centro del fuego
+    #function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5):
+    elipse = function(fuego[0],fuego[1], pp_lat, pp_lon, viento[0],viento[1])
+    e_cx = elipse[0](ce_y, ce_x, ps_y, ps_x, a, b, alfa)
+    e_cy = elipse[1]
+
+    #mapa = make_map()
+
+
 def dist_fuego_persona(lat1, lon1, lat2, lon2):
 
     # approximate radius of earth in km
