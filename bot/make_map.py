@@ -57,5 +57,12 @@ def make_map(lon_e=-32.08, lat_e=-64.53, width_e=0.01, height_e=0.02,
     # Creamos el nombre en funcion de la pos de la persona
     file_name = "map_" + str(lon_p) + "_" + str(lat_p) + ".png"
     plt.savefig("maps/" + file_name)
+<<<<<<< HEAD
     
     return file_name
+=======
+    return file_name
+
+if __name__ == "__main__":
+    make_map()
+>>>>>>> 39a17cdc65c1ae25b0f95925dfca6bb05bc40663
