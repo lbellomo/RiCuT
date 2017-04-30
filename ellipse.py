@@ -1,13 +1,25 @@
 import numpy as np
 from matplotlib import pyplot
 
-def function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5):
+import pyproj
+
+
+def ellipse(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long, coef_A=3.7428, coef_B=-3.9333):
+
+
+    p = pyproj.Proj(init='epsg:3857')
+    #lon, lat = p(x, y, inverse=True)
+    #print lat, lon
 
     # mapeo x-y con long-lat
-    fi_x = fi_long
-    fi_y =  fi_lat
-    pp_x = pp_long
-    pp_y = pp_lat
+    #fi_x = fi_long
+    #fi_y =  fi_lat
+    fi_x, fi_y = p(fi_lat, fi_long)
+
+    #pp_x = pp_long
+    #pp_y = pp_lat
+    pp_x, pp_y = p(pp_lat, pp_long)
+
     vel_x = vel_long
     vel_y =  vel_lat
 
@@ -20,7 +32,7 @@ def function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5):
     alfa = np.arccos(vel_x/modulo_velocidad) * 180 / np.pi
 
     # area del fuego deseada
-    area_fuego = 1 + coef_A*modulo_velocidad # 2pi a b
+    area_fuego = coef_A*modulo_velocidad + coef_B # 2pi a b
 
     # excentricidad deseada
     if modulo_velocidad < 5:
@@ -58,6 +70,7 @@ def function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5):
     ce_x = ce_x__elip_rotado + fi_x
     ce_y = ce_y__elip_rotado + fi_y
 
+    ce_long, ce_lat = p(ce_x, ce_y, inverse=True)
 
     # trasladamos la ubicacion de la persona en relacion al foco del incendio (origen)
     x_persona_ellip = pp_lat - fi_lat
@@ -97,17 +110,20 @@ def function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5):
             ps_x = E[index][0]
             ps_y = E[index][1]
 
+    ps_long, ps_lat =  p(ps_x, ps_y, inverse=True)
+
     punto_salida = np.array([[ps_x, ps_y]])
 
     # grafico para validar los resultados.
-    # pyplot.plot(*zip(*E))
-    # pyplot.scatter(*zip(*foco_incendio))
-    # pyplot.scatter(*zip(*posicion_persona))
-    # pyplot.scatter(*zip(*punto_salida))
-    # pyplot.grid()
+    pyplot.plot(*zip(*E))
+    pyplot.scatter(*zip(*foco_incendio))
+    pyplot.scatter(*zip(*posicion_persona))
+    pyplot.scatter(*zip(*punto_salida))
+    pyplot.grid()
 
-    return (ce_y, ce_x, ps_y, ps_x, a, b, alfa)
+    return (ce_lat, ce_long, ps_lat, ps_long, a, b, alfa)
 
 # function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5)
-function(-30,-60,-30,-60,10,0)
-function(-30,-50,-30,-50,-1,0)
+if __name__ == '__main__':
+    ellipse(-30,-60,-30,-60,10,0)
+    ellipse(-30,-50,-30,-50,-1,0)
