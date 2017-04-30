@@ -1,3 +1,10 @@
+import os
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.patches import Ellipse
+from mpl_toolkits.basemap import Basemap
+
 def make_map(lon_e=-32.08, lat_e=-64.53, width_e=0.01, height_e=0.02,
              angle_e=30, lon_p=-32.085, lat_p=-64.53, lon_s=-32.083, lat_s=-64.532):
     '''
