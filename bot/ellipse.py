@@ -4,7 +4,7 @@ from matplotlib import pyplot
 import pyproj
 
 
-def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.7428, coef_B=-3.9333):
+def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3000.7428, coef_B=-3.9333):
     '''
     Return:
     -------
@@ -15,6 +15,7 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.74
     a, b: eje mayor y menor de la elipse
     alfa: angulo de la elipse
     '''
+
     p = pyproj.Proj(init='epsg:3857')
 
     # mapeo x-y con long-lat
@@ -79,15 +80,18 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.74
     ce_long, ce_lat = p(ce_x, ce_y, inverse=True)
 
     # trasladamos la ubicacion de la persona en relacion al foco del incendio (origen)
-    x_persona_ellip = pp_lat - fi_lat
-    y_persona_ellip = pp_long - fi_long
+    x_persona_ellip = pp_x - fi_x
+    y_persona_ellip = pp_y - fi_y
 
     dist_persona_al_foco_1 = np.sqrt(x_persona_ellip**2 + y_persona_ellip**2)
     dist_persona_al_foco_2 = np.sqrt( (x_persona_ellip - foco_2_x_rotado)**2 + ( y_persona_ellip -  foco_2_y_rotado)**2)
 
     # si la persona no esta en riesgo.
     if not (dist_persona_al_foco_1 + dist_persona_al_foco_2) < 2*a:
+        print "person is safe"
         return (ce_y, ce_x, None, None, a, b, alfa)
+
+    print "person is not safe"
 
     # calculo los puntos de la elipse y buscamos el punto mas cercano.
     # ecuacion parametrica
@@ -121,15 +125,18 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.74
     punto_salida = np.array([[ps_x, ps_y]])
 
     # grafico para validar los resultados.
-    #pyplot.plot(*zip(*E))
-    #pyplot.scatter(*zip(*foco_incendio))
-    #pyplot.scatter(*zip(*posicion_persona))
-    #pyplot.scatter(*zip(*punto_salida))
-    #pyplot.grid()
+    # pyplot.plot(*zip(*E))
+    # pyplot.scatter(*zip(*foco_incendio))
+    # pyplot.scatter(*zip(*posicion_persona),c='r' )
+    # pyplot.scatter(*zip(*punto_salida))
+
 
     return (ce_lat, ce_long, ps_lat, ps_long, a, b, alfa)
 
 # function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5)
 if __name__ == '__main__':
-    ellipse(-30,-60,-30,-60,10,0)
-    ellipse(-30,-60.0001,-30,-60.0001,10,180)
+    for angle in range(0,360,90):
+        for vel_mod in range(1,100,50):
+            ellipse(-33.104597,-64.364401,-33.104597,-64.364401, vel_mod, angle)
+    pyplot.grid()
+    pyplot.savefig('myfig.png')
