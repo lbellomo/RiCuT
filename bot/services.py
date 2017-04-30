@@ -72,7 +72,7 @@ def respuesta(pp_lat,pp_lon):
     photo = get_photo(name)
     return msg, photo  
 """
-    
+
 def dist_fuego_persona(lat1, lon1, lat2, lon2):
 
     # approximate radius of earth in km
@@ -93,5 +93,5 @@ def dist_fuego_persona(lat1, lon1, lat2, lon2):
 
     return distance
 
-def direccion_flecha(lat1=1, lon=1, lat2=1, lat2=1):
+def direccion_flecha(lat1=1, lon=1, lat2=1, lon2=1):
     return "norte"
