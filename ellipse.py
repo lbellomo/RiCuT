@@ -4,31 +4,27 @@ from matplotlib import pyplot
 import pyproj
 
 
-def ellipse(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long, coef_A=3.7428, coef_B=-3.9333):
-
-
+def ellipse(fi_lat, fi_long,pp_lat, pp_long, vel_modulo, vel_angulo, coef_A=3.7428, coef_B=-3.9333):
     p = pyproj.Proj(init='epsg:3857')
-    #lon, lat = p(x, y, inverse=True)
-    #print lat, lon
 
     # mapeo x-y con long-lat
-    #fi_x = fi_long
-    #fi_y =  fi_lat
+    #fi_x = fi_long # antes de usar pyproj
+    #fi_y =  fi_lat # antes de usar pyproj
     fi_x, fi_y = p(fi_lat, fi_long)
 
-    #pp_x = pp_long
-    #pp_y = pp_lat
+    #pp_x = pp_long # antes de usar pyproj
+    #pp_y = pp_lat  # antes de usar pyproj
     pp_x, pp_y = p(pp_lat, pp_long)
 
-    vel_x = vel_long
-    vel_y =  vel_lat
+    vel_x = vel_modulo*np.cos(vel_angulo)
+    vel_y =  vel_modulo*np.sin(vel_angulo)
 
     # calculo el modulo de la velocidad
     modulo_velocidad = np.sqrt(vel_x**2 + vel_y**2) # km por hora
     rotMatrix = np.array([[vel_x/modulo_velocidad, vel_y/modulo_velocidad],
                              [-vel_y/modulo_velocidad,  vel_x/modulo_velocidad]])
 
-    # calculo el alfa
+    # calculo el alfa (rotacion de la elipse)
     alfa = np.arccos(vel_x/modulo_velocidad) * 180 / np.pi
 
     # area del fuego deseada
@@ -60,12 +56,12 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long, coef_A=3.7428, co
     foco_2_y = 0
 
     # rotamos el foco segun el viento.
-    foco_2_x_rotado = foco_2_x*vel_lat/modulo_velocidad - foco_2_y*vel_long/modulo_velocidad
-    foco_2_y_rotado = foco_2_x*vel_long/modulo_velocidad - foco_2_y*vel_lat/modulo_velocidad
+    foco_2_x_rotado = foco_2_x*vel_y/modulo_velocidad - foco_2_y*vel_x/modulo_velocidad
+    foco_2_y_rotado = foco_2_x*vel_x/modulo_velocidad - foco_2_y*vel_y/modulo_velocidad
 
     # rotamos el centro segun el viento.
-    ce_x__elip_rotado = ce_x_elip*vel_lat/modulo_velocidad - ce_y_elip*vel_long/modulo_velocidad
-    ce_y__elip_rotado = ce_x_elip*vel_long/modulo_velocidad - ce_y_elip*vel_lat/modulo_velocidad
+    ce_x__elip_rotado = ce_x_elip*vel_y/modulo_velocidad - ce_y_elip*vel_x/modulo_velocidad
+    ce_y__elip_rotado = ce_x_elip*vel_x/modulo_velocidad - ce_y_elip*vel_y/modulo_velocidad
 
     ce_x = ce_x__elip_rotado + fi_x
     ce_y = ce_y__elip_rotado + fi_y
@@ -126,4 +122,4 @@ def ellipse(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long, coef_A=3.7428, co
 # function(fi_lat, fi_long,pp_lat, pp_long,vel_lat, vel_long,coef_A=0.5)
 if __name__ == '__main__':
     ellipse(-30,-60,-30,-60,10,0)
-    ellipse(-30,-50,-30,-50,-1,0)
+    ellipse(-30,-60.0001,-30,-60.0001,10,180)
